@@ -17,6 +17,8 @@ dependencies = [
     "tensorboard>=2.19.0",
     "tensorflow>=2.19.0",
     "torch>=2.7.0",
+    "torchsummary>=1.5.1",
     "torchvision>=0.22.0",
     "torchviz>=0.0.3",
+    "tqdm>=4.67.1",
 ]
