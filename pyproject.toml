@@ -1,0 +1,22 @@
+[project]
+name = "ml-training-2025-pytorch"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=6.29.5",
+    "jupyterlab>=4.4.2",
+    "matplotlib>=3.10.3",
+    "notebook>=7.4.2",
+    "openpyxl>=3.1.5",
+    "pandas>=2.2.3",
+    "ruff>=0.11.10",
+    "scikit-learn>=1.6.1",
+    "seaborn>=0.13.2",
+    "tensorboard>=2.19.0",
+    "tensorflow>=2.19.0",
+    "torch>=2.7.0",
+    "torchvision>=0.22.0",
+    "torchviz>=0.0.3",
+]
