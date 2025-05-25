@@ -8,3 +8,5 @@ wheels/
 runs/
 # Virtual environments
 .venv
+cp_test.pth
+checkpoints/

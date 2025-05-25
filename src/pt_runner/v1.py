@@ -1,26 +1,8 @@
 import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
-
-# This class wraps NumPy arrays (X for features, Y for targets) into a PyTorch Dataset, allowing you to use them with DataLoader for batching, shuffling, etc.
-
-# Method Details
-# __init__(self, X, Y)
-# - Stores the feature and target arrays.
-
-# __len__(self)
-# - Returns the number of samples (assumes Y is shaped [num_samples, ...]).
-
-# __getitem__(self, idx)
-# - Fetches the idx-th sample from X and Y.
-# - Converts them from NumPy arrays to PyTorch tensors and casts them to float.
-# - Returns the feature and target tensors as a tuple.
-
-
-# Assumptions
-# - Both X and Y are NumPy arrays.
-# - X is at least 2D, as indicated by the slicing self.X[idx, :].
-# - The number of samples in X and Y match along the first dimension
+from datetime import datetime
+import os
 
 
 class DatasetPT(Dataset):
@@ -89,3 +71,73 @@ class DataHandlerPT(Dataset):
 
     def get_test(self):
         return DatasetPT(X=self.X_test, Y=self.Y_test)
+
+
+class CheckpointHandler:
+    @staticmethod
+    def list_saved_files(root="."):
+        for root, dirs, files in os.walk(root):
+            for file in files:
+                filepath = os.path.join(root, file)
+                filepath = filepath.replace(
+                    "\\", "/"
+                )  # replace backslash with forward slash
+                if file.endswith("pth") or file.endswith("pt"):
+                    print(filepath)
+
+    @staticmethod
+    def make_dir(folder_path):
+        os.makedirs(folder_path, exist_ok=True)
+
+    @staticmethod
+    def get_dt():
+        return datetime.now().strftime("%Y-%m-%d_%H-%M")
+
+    @staticmethod
+    def save(save_path, model, optimizer=None, epoch=None, val_loss=None):
+        checkpoint = {
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "val_loss": val_loss,
+        }
+        torch.save(checkpoint, save_path)
+
+    @staticmethod
+    def load(save_path, model, optimizer=None):
+        checkpoint = torch.load(save_path)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        if optimizer is not None:
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        epoch = checkpoint["epoch"]
+        val_loss = checkpoint["val_loss"]
+        return model, optimizer, epoch, val_loss
+
+
+class EarlyStopper:
+    def __init__(self, patience=10, min_delta=0):
+        # patience: Number of epochs to wait for improvement before stopping
+        # min_delta: Minimum decrease in validation loss to consider as an improvement
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0  # Counts epochs with no significant improvement
+        self.min_val_loss = float("inf")  # Tracks the lowest validation loss so far
+
+    def __call__(self, val_loss):
+        # If current validation loss is the best so far, it's an improvement
+        if val_loss < self.min_val_loss:
+            self.min_val_loss = val_loss  # Update best loss
+            self.counter = 0  # Reset counter since we have improvement
+            return {"best_loss": True, "early_stop": False}
+        else:
+            # If loss hasn't improved enough (by at least min_delta), count it
+            if val_loss > (self.min_val_loss + self.min_delta):
+                self.counter += 1
+                # If we've waited too long with no improvement, trigger early stop
+                if self.counter >= self.patience:
+                    return {"best_loss": False, "early_stop": True}
+
+        # Fallback condition
+        # (1) Loss has not improved but should wait more (counter < patience)
+        # (2) No significant worsening (val_loss is between "min_val_loss" and "min_val_loss + min_delta")
+        return {"best_loss": False, "early_stop": False}
