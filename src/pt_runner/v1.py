@@ -104,8 +104,8 @@ class CheckpointHandler:
         torch.save(checkpoint, save_path)
 
     @staticmethod
-    def load(save_path, model, optimizer=None):
-        checkpoint = torch.load(save_path)
+    def load(load_path, model, optimizer=None):
+        checkpoint = torch.load(load_path)
         model.load_state_dict(checkpoint["model_state_dict"])
         if optimizer is not None:
             optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
