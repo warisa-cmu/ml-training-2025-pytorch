@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 runs/
+data/
 # Virtual environments
 .venv
 cp_test.pth
