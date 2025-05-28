@@ -15,7 +15,7 @@ class DatasetPT(Dataset):
 
     def __getitem__(self, idx):
         X_out = torch.from_numpy(self.X[idx, :]).float()
-        Y_out = torch.from_numpy(self.Y[idx, :]).float()
+        Y_out = torch.from_numpy(self.Y[idx, :]).long()
         return X_out, Y_out
 
 
