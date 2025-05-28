@@ -1,8 +1,33 @@
+import os
+from datetime import datetime
+
 import torch
+import torch.nn.functional as F
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
-from datetime import datetime
-import os
+
+
+def calc_metrices(logits: torch.Tensor, labels: torch.Tensor, isPrint=False):
+    # Apply softmax to logits to obtain prediction probabilities for each class
+    probs = F.softmax(logits, dim=1)  # Shape: (batch_size, num_classes)
+
+    # Use argmax to get the predicted class index for each sample
+    preds = torch.argmax(probs, dim=1)  # Shape: (batch_size)
+
+    # Move prediction and label tensors to CPU and convert to numpy arrays for scikit-learn compatibility
+    Y_pred_labels = preds.cpu().numpy()
+    Y_true_labels = labels.cpu().numpy()
+
+    # Generate the classification report as a dictionary (includes precision, recall, f1, etc.)
+    report = classification_report(Y_true_labels, Y_pred_labels, output_dict=True)
+
+    # Optionally print a nicely formatted classification report if isPrint is True
+    if isPrint:
+        print(classification_report(Y_true_labels, Y_pred_labels, digits=3))
+
+    # Return the report dictionary and the numpy arrays of predictions and labels
+    return report, Y_pred_labels, Y_true_labels
 
 
 class DatasetPT(Dataset):
