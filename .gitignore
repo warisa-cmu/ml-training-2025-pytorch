@@ -7,6 +7,7 @@ wheels/
 *.egg-info
 runs/
 data/
+dataset/
 # Virtual environments
 .venv
 cp_test.pth
