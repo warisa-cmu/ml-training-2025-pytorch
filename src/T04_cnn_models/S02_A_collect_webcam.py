@@ -1,8 +1,9 @@
 import cv2
 import os
 
-BASE_PATH = "src/T04_cnn_models/dataset"
+# Change this
 CLASS_LIST = ["masked", "unmasked"]
+BASE_PATH = "src/T04_cnn_models/dataset"
 
 
 def get_user_choice(options, prompt):
