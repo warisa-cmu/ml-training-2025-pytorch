@@ -2,7 +2,7 @@ import cv2
 import os
 
 # Change this
-CLASS_LIST = ["masked", "unmasked"]
+CLASS_LIST = ["class_1", "class_2", "class_3"]
 BASE_PATH = "src/T04_cnn_models/dataset"
 
 
